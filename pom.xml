@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.apiGateWay</groupId>
 	<artifactId>ApiGateWay</artifactId>
-	<version>1.0.6</version>
+	<version>1.0.7</version>
 	<name>ApiGateWay</name>
 	<description>Demo project for Spring Boot</description>
 	<properties>
@@ -33,6 +33,10 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-redis</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>io.projectreactor</groupId>
 			<artifactId>reactor-test</artifactId>
 			<scope>test</scope>
@@ -43,7 +47,12 @@
 			<artifactId>scrapemodule</artifactId>
 			<version>805a096091</version>
 		</dependency>
-	</dependencies>
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-gateway-server</artifactId>
+            <version>4.0.7</version>
+        </dependency>
+    </dependencies>
 
 	<repositories>
 		<repository>
