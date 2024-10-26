@@ -10,9 +10,9 @@
 	</parent>
 	<groupId>com.apiGateWay</groupId>
 	<artifactId>ApiGateWay</artifactId>
-	<version>1.0.7</version>
+	<version>1.0.9</version>
 	<name>ApiGateWay</name>
-	<description>Demo project for Spring Boot</description>
+	<description>api gateway</description>
 	<properties>
 		<java.version>17</java.version>
 		<spring-cloud.version>2022.0.4</spring-cloud.version>
@@ -52,7 +52,11 @@
             <artifactId>spring-cloud-gateway-server</artifactId>
             <version>4.0.7</version>
         </dependency>
-    </dependencies>
+		<dependency>
+			<groupId>org.springframework.data</groupId>
+			<artifactId>spring-data-redis</artifactId>
+		</dependency>
+	</dependencies>
 
 	<repositories>
 		<repository>

@@ -8,6 +8,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.env.Environment;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
+import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.GenericToStringSerializer;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,20 +18,32 @@ import org.springframework.beans.factory.annotation.Value;
 @Import({ModuleConfigurationApp.class})
 public class AppConfig {
 
-    @Value("${LB_SCRAPESERVICE_URL:http://scrape-service:8090}")
+    @Value("${lbScrapeServiceUrl}")
     private String lbScrapeServiceUrl;
 
     @Value("${ratelimiter-gateway}")
     private String ratelimiterGateway;
 
+    @Value("${spring.data.redis}")
+    private String redisServe;
+
+    @Value("${spring.data.redis.port}")
+    private String redisPort;
+
     @Bean
     public RouteLocator customRouteLocator(RouteLocatorBuilder builder, Environment environment, RedisTemplate<String, Integer> redisTemplate) {
-        String uri = !environment.matchesProfiles("prod","PROD") ? "lb://scrape-service" : lbScrapeServiceUrl;
+        String uri = lbScrapeServiceUrl;
         return builder.routes()
                 .route("scrape-service", r -> r.path("/scrape/**")
-                        .filters(f -> f.filter(new RateLimiter(redisTemplate,ratelimiterGateway)))
+                        .filters(f -> f.filter(new RateLimiter(redisTemplate, ratelimiterGateway)))
                         .uri(uri))
                 .build();
+    }
+
+    @Bean
+    public LettuceConnectionFactory redisConnectionFactory() {
+        RedisStandaloneConfiguration redisConfig = new RedisStandaloneConfiguration(redisServe, Integer.parseInt(redisPort));
+        return new LettuceConnectionFactory(redisConfig);
     }
 
     @Bean
