@@ -1,6 +1,7 @@
 package com.apiGateWay.ApiGateWay;
 
 import org.example.ModuleConfigurationApp;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.gateway.route.RouteLocator;
 import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
 import org.springframework.context.annotation.Bean;
@@ -12,7 +13,9 @@ import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.GenericToStringSerializer;
-import org.springframework.beans.factory.annotation.Value;
+
+import java.util.Arrays;
+import java.util.List;
 
 @Configuration
 @Import({ModuleConfigurationApp.class})
@@ -30,13 +33,15 @@ public class AppConfig {
     @Value("${spring.data.redis.port}")
     private String redisPort;
 
+    @Value("${allowed.origins}")
+    private String allowedOrigins;
+
     @Bean
     public RouteLocator customRouteLocator(RouteLocatorBuilder builder, Environment environment, RedisTemplate<String, Integer> redisTemplate) {
-        String uri = lbScrapeServiceUrl;
         return builder.routes()
                 .route("scrape-service", r -> r.path("/scrape/**")
                         .filters(f -> f.filter(new RateLimiter(redisTemplate, ratelimiterGateway)))
-                        .uri(uri))
+                        .uri(lbScrapeServiceUrl))
                 .build();
     }
 
@@ -52,6 +57,11 @@ public class AppConfig {
         template.setConnectionFactory(connectionFactory);
         template.setKeySerializer(new GenericToStringSerializer<>(String.class));
         return template;
+    }
+
+    @Bean
+    public List<String> allowedOrigins() {
+        return Arrays.asList(allowedOrigins.split(","));
     }
 
 }
